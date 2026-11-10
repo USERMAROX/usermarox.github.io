@@ -1,840 +1,422 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
-<title>DEJAMU · Reporte Mantenimiento Fechadoras</title>
-<script src="https://accounts.google.com/gsi/client" async></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16191D">
+<title>Dejamu · Mantenimiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
-  --blue:#1F4E79;--blue-l:#dce8f4;--blue-m:#2E86C1;
-  --green:#1A5C33;--green-l:#e2f0e8;--green-m:#27AE60;
-  --purple:#4A235A;--purple-l:#EDE8F8;
-  --amber:#7D4E00;--amber-l:#FEF3D0;
-  --red:#7B1A1A;--red-l:#FDE8E8;
-  --gray:#F5F4F1;--gray2:#E8E5E0;--gray3:#D0CCC5;
-  --text:#1A1A18;--text2:#5A5855;--text3:#8A8580;
-  --r:10px;--r-lg:14px;
-  --shadow:0 2px 8px rgba(0,0,0,.10);
+  --bg:#F3F4F6; --surface:#FFFFFF; --ink:#16191D; --muted:#5B6470; --line:#DCE0E5; --line2:#AEB5BF;
+  --primary:#1D4E89; --primary-soft:#DCE8F7; --dark:#16191D;
+  --at:#1B5E34; --at-soft:#DDF0E4; --ex:#8A3B00; --ex-soft:#FDE8D4; --ex-line:#F0B98A; --ne:#8E1F1F; --ne-soft:#F6DEDE;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  color-scheme:light;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--gray);min-height:100vh}
-
-/* ── PANTALLA LOGIN ── */
-#screen-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--blue)}
-.login-logo{width:72px;height:72px;background:rgba(255,255,255,.15);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px}
-.login-title{color:#fff;font-size:22px;font-weight:700;margin-bottom:6px;text-align:center}
-.login-sub{color:rgba(255,255,255,.7);font-size:13px;margin-bottom:32px;text-align:center}
-.login-card{background:#fff;border-radius:var(--r-lg);padding:24px;width:100%;max-width:360px;box-shadow:var(--shadow)}
-.login-card h3{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:16px;text-align:center}
-#g-signin-btn{width:100%;display:flex;justify-content:center}
-.login-note{font-size:11px;color:var(--text3);text-align:center;margin-top:14px;line-height:1.5}
-
-/* ── SHELL ── */
-#screen-app{display:none;flex-direction:column;min-height:100vh}
-.topbar{background:var(--blue);color:#fff;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:50;flex-shrink:0}
-.topbar-brand{font-weight:700;font-size:14px}
-.user-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 10px 4px 4px;cursor:pointer}
-.user-avatar{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.user-email{font-size:11px;opacity:.9;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* ── STEPS ── */
-.steps-bar{background:#fff;border-bottom:1px solid var(--gray2);display:flex;padding:0;position:sticky;top:52px;z-index:40}
-.step-tab{flex:1;padding:12px 4px 10px;text-align:center;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;position:relative}
-.step-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
-.step-tab.done{color:var(--green-m);border-bottom-color:var(--green-m)}
-.step-tab .step-n{display:block;font-size:18px;font-weight:700;line-height:1;margin-bottom:2px}
-.step-tab.done .step-n::after{content:'✓';font-size:14px}
-.step-tab.done .step-n-num{display:none}
-
-/* ── CONTENT ── */
-.content{flex:1;padding:16px;max-width:600px;margin:0 auto;width:100%}
-
-/* ── CARDS ── */
-.card{background:#fff;border:1px solid var(--gray2);border-radius:var(--r-lg);margin-bottom:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.card-head{padding:14px 16px 12px;border-bottom:1px solid var(--gray2);display:flex;align-items:center;gap:10px}
-.card-icon{width:36px;height:36px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
-.ci-blue{background:var(--blue-l);color:var(--blue)}
-.ci-green{background:var(--green-l);color:var(--green)}
-.ci-amber{background:var(--amber-l);color:var(--amber)}
-.ci-purple{background:var(--purple-l);color:var(--purple)}
-.card-title{font-size:14px;font-weight:700}
-.card-sub{font-size:11px;color:var(--text3);margin-top:1px}
-.card-body{padding:14px 16px}
-
-/* ── FIELDS ── */
-.field{margin-bottom:14px}
-.field:last-child{margin-bottom:0}
-.lbl{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
-.lbl .req{color:#c04040}
-.lbl .hint{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px}
-input[type=text],input[type=date],input[type=number],select,textarea{
-  width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--gray3);
-  border-radius:var(--r);background:#fff;color:var(--text);font-family:inherit;
-  transition:border-color .12s;appearance:none;-webkit-appearance:none}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-m);box-shadow:0 0 0 3px rgba(46,134,193,.15)}
-textarea{resize:vertical;min-height:72px;line-height:1.5}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-
-/* ── CHIP SELECTOR (reemplaza radio buttons) ── */
-.chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
-.chip{padding:8px 14px;border:1.5px solid var(--gray3);border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .12s;user-select:none;white-space:nowrap}
-.chip:active{transform:scale(.97)}
-.chip.sel{border-color:var(--blue);background:var(--blue);color:#fff}
-.chip.sel-green.sel{border-color:var(--green-m);background:var(--green-m);color:#fff}
-.chip.sel-red.sel{border-color:#c04040;background:#c04040;color:#fff}
-.chip.sel-amber.sel{border-color:#c87800;background:#c87800;color:#fff}
-
-/* ── CODIFICADORA GRID ── */
-.cod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:4px}
-.cod-btn{aspect-ratio:1;border:2px solid var(--gray3);border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;color:var(--text2);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .15s;user-select:none}
-.cod-btn span.cod-num{font-size:20px;font-weight:800;line-height:1}
-.cod-btn span.cod-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
-.cod-btn:active{transform:scale(.95)}
-.cod-btn.sel{border-color:var(--blue);background:var(--blue-l);color:var(--blue)}
-.cod-btn.sel span.cod-lbl{color:var(--blue)}
-
-/* ── CHECKLIST ── */
-.chk-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
-.chk-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--gray3);border-radius:var(--r);cursor:pointer;transition:all .12s;user-select:none}
-.chk-item:active{transform:scale(.99)}
-.chk-item.checked{border-color:var(--green-m);background:var(--green-l)}
-.chk-check{width:22px;height:22px;border:2px solid var(--gray3);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .12s;background:#fff}
-.chk-item.checked .chk-check{background:var(--green-m);border-color:var(--green-m);color:#fff}
-.chk-text{font-size:13px;flex:1;line-height:1.3}
-.chk-crit{font-size:10px;color:var(--amber);font-weight:700;flex-shrink:0}
-
-/* ── PROGRESS RING ── */
-.prog-wrap{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;background:var(--gray);border-radius:var(--r)}
-.prog-ring{position:relative;width:44px;height:44px;flex-shrink:0}
-.prog-ring svg{transform:rotate(-90deg)}
-.prog-ring .prog-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--blue)}
-.prog-label{font-size:12px;color:var(--text2);flex:1}
-.prog-label strong{display:block;font-size:13px;color:var(--text)}
-
-/* ── PARAM BADGE ── */
-.param-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:4px}
-.pb-ok{background:var(--green-l);color:var(--green)}
-.pb-warn{background:var(--amber-l);color:var(--amber)}
-.pb-none{display:none}
-
-/* ── FOTO UPLOADER ── */
-.foto-zone{border:2.5px dashed var(--gray3);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;transition:all .15s;position:relative;background:#fafafa}
-.foto-zone:hover,.foto-zone.drag{border-color:var(--blue-m);background:var(--blue-l)}
-.foto-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.foto-zone .fz-icon{font-size:32px;margin-bottom:6px}
-.foto-zone .fz-text{font-size:13px;color:var(--text2);font-weight:600}
-.foto-zone .fz-hint{font-size:11px;color:var(--text3);margin-top:3px}
-.foto-preview{position:relative;border-radius:var(--r);overflow:hidden;max-height:200px}
-.foto-preview img{width:100%;max-height:200px;object-fit:cover;display:block}
-.foto-preview .foto-del{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-weight:700}
-
-/* ── ALERT ── */
-.alert{padding:10px 14px;border-radius:var(--r);font-size:12px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;border:1px solid;line-height:1.4}
-.alert-warn{background:var(--amber-l);border-color:#d4a017;color:var(--amber)}
-.alert-ok{background:var(--green-l);border-color:#7ecba0;color:var(--green)}
-.alert-err{background:var(--red-l);border-color:#e08080;color:var(--red)}
-.alert-icon{flex-shrink:0;font-size:14px}
-
-/* ── BOTTOM BAR ── */
-.bottom-bar{position:sticky;bottom:0;background:#fff;border-top:1.5px solid var(--gray2);padding:10px 16px;display:flex;gap:10px;align-items:center;z-index:40}
-.btn{flex:1;padding:12px 16px;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray3);background:#fff;color:var(--text);transition:all .12s;text-align:center}
-.btn:active{transform:scale(.98)}
-.btn-prev{flex:0 0 auto;padding:12px 18px;background:var(--gray)}
-.btn-next{background:var(--blue);color:#fff;border-color:var(--blue)}
-.btn-send{background:var(--green-m);color:#fff;border-color:var(--green-m)}
-.btn:disabled{background:var(--gray2);color:var(--text3);border-color:var(--gray2);cursor:not-allowed;transform:none}
-
-/* ── RESULTADO ── */
-.result-screen{text-align:center;padding:40px 20px}
-.result-screen .r-icon{font-size:64px;margin-bottom:16px;display:block}
-.result-screen h2{font-size:20px;font-weight:700;margin-bottom:8px}
-.result-screen p{font-size:13px;color:var(--text2);margin-bottom:6px}
-
-/* ── CONFIG MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:flex-end;justify-content:center}
-.overlay.show{display:flex}
-.modal{background:#fff;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 16px 32px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto}
-.modal h3{font-size:16px;font-weight:700;color:var(--blue);margin-bottom:14px}
-.modal-footer{display:flex;gap:10px;margin-top:16px}
-.modal-footer .btn{flex:1}
-
-/* ── RESPONSIVE ── */
-@media(max-width:400px){.cod-grid{grid-template-columns:repeat(3,1fr)}.grid2,.grid3{grid-template-columns:1fr}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;-webkit-text-size-adjust:100%}
+body{min-height:100vh;padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:var(--primary)}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.top{position:sticky;top:0;z-index:5;background:var(--dark);color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) 20px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.top b{font-size:13px;letter-spacing:.08em}
+.top button{background:none;border:0;color:#C9CED6;font-size:14px;padding:6px 0;cursor:pointer}
+.wrap{max-width:560px;margin:0 auto}
+.pad{padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.code{font-family:var(--mono);font-weight:600}
+.muted{color:var(--muted);font-size:13px}
+.chip{font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.chip.at{background:var(--at-soft);color:var(--at)} .chip.ex{background:var(--ex-soft);color:var(--ex)}
+.chip.ne{background:var(--ne-soft);color:var(--ne)} .chip.gr{background:#ECEEF1;color:#3D4450}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.btn{min-height:48px;border-radius:10px;border:0;background:var(--primary);color:#fff;font-weight:600;font-size:16px;cursor:pointer;padding:0 16px;width:100%}
+.btn.ex{background:var(--ex)} .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line2)}
+.btn.outline{background:var(--surface);color:var(--primary);border:1px solid var(--primary)}
+.btn.big{min-height:52px;border:2px solid var(--ink);background:var(--surface);color:var(--ink);font-weight:700}
+.btn:disabled{opacity:.5;cursor:default}
+.sec{font-size:13px;font-weight:700;letter-spacing:.04em;margin:4px 0 -6px}
+.sec.ex{color:var(--ex)} .sec.pr{color:var(--primary)} .sec.gr{color:#3D4450} .sec.at{color:var(--at)}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:14px;font-size:14px;color:var(--muted)}
+.head{background:var(--surface);padding:18px 20px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.head .code{font-size:26px}
+.head .name{font-size:19px;font-weight:600}
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:14px 0;border:0;background:none;font-size:15px;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--primary);font-weight:600;border-bottom-color:var(--primary)}
+.qband{background:var(--primary);color:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.bar{height:8px;background:#3E6DA6;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:#fff}
+.note{border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.45}
+.note.warn{background:var(--ex-soft);color:var(--ex)} .note.err{background:var(--ne-soft);color:var(--ne)} .note.info{background:#ECEEF1;color:#3D4450}
+.foot{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px))}
+.foot .wrap{display:flex;gap:10px}
+label.f{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
+.in{width:100%;min-height:48px;border:1px solid var(--line2);border-radius:8px;padding:10px 12px;background:#fff;font-size:16px}
+textarea.in{resize:vertical}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button{min-height:48px;border-radius:8px;border:1px solid var(--line2);background:#fff;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{border:2px solid var(--primary);background:var(--primary-soft);color:var(--primary)}
+.photo{min-height:96px;border:2px dashed var(--line2);border-radius:10px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#3D4450;cursor:pointer;padding:10px;text-align:center}
+.photo img{max-width:100%;max-height:220px;border-radius:8px}
+.facts{background:#ECEEF1;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px}
+.facts span{display:block;color:var(--muted)} .facts b{font-weight:600}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);background:#fff;font-size:13px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600}
+.center{text-align:center;align-items:center}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--primary);border-radius:50%;animation:s 0.9s linear infinite;margin:40px auto}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;font-size:14px;max-width:90vw;z-index:20}
+.hidden{display:none!important}
+.chip.mine{background:var(--primary-soft);color:var(--primary)}
+.search{display:flex;gap:8px}.search .in{flex:1}.search .btn{width:auto}
+.res{display:flex;flex-direction:column;gap:8px}
+.res button{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
 </style>
 </head>
 <body>
+<div class="top"><b>DEJAMU · MANTENIMIENTO</b><button id="salir" class="hidden" type="button">Salir</button></div>
+<main id="app" aria-live="polite"></main>
+<div id="toast" class="toast hidden" role="status"></div>
 
-<!-- ══════════════════════════════════════════════════════════════════════════
-     PANTALLA LOGIN
-══════════════════════════════════════════════════════════════════════════════ -->
-<div id="screen-login">
-  <div class="login-logo">🏭</div>
-  <div class="login-title">DEJAMU · Fechadoras Inkjet</div>
-  <div class="login-sub">Sistema de reporte de mantenimiento</div>
-
-  <div class="login-card" id="login-card-main">
-    <h3>Inicia sesión con tu cuenta Google corporativa</h3>
-    <div id="g-signin-btn"></div>
-    <div id="login-no-btn" style="display:none;text-align:center;padding:8px 0">
-      <div style="font-size:12px;color:#c04040;margin-bottom:12px;line-height:1.5">
-        ⚙ App sin configurar.<br>El gestor debe ingresar el Client ID primero.
-      </div>
-      <button onclick="abrirConfig()" style="width:100%;padding:11px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">
-        ⚙ Configurar app
-      </button>
-    </div>
-    <div class="login-note">Solo se usa tu correo para identificar el reporte.<br>No se accede a ningún otro dato de tu cuenta.</div>
-  </div>
-
-  <div style="margin-top:16px">
-    <button onclick="abrirConfig()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);padding:8px 18px;border-radius:20px;font-size:12px;cursor:pointer">
-      ⚙ Configuración (gestor)
-    </button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     APP PRINCIPAL
-══════════════════════════════════════════════════════════════════════════════ -->
-<div id="screen-app">
-
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="topbar-brand">DEJAMU · Mantenimiento</div>
-    <div class="user-chip" onclick="abrirConfig()">
-      <div class="user-avatar" id="user-initials">?</div>
-      <div class="user-email" id="user-email-display">—</div>
-    </div>
-  </div>
-
-  <!-- Steps tabs -->
-  <div class="steps-bar">
-    <div class="step-tab active" id="stab-1" onclick="irPaso(1)">
-      <span class="step-n"><span class="step-n-num">1</span></span>Quién / Cuál
-    </div>
-    <div class="step-tab" id="stab-2" onclick="irPaso(2)">
-      <span class="step-n"><span class="step-n-num">2</span></span>Actividades
-    </div>
-  </div>
-
-  <!-- Content -->
-  <div class="content">
-
-    <!-- ── PASO 1: IDENTIFICACIÓN ── -->
-    <div id="paso-1">
-
-      <div class="card">
-        <div class="card-head">
-          <div class="card-icon ci-blue">◉</div>
-          <div><div class="card-title">Información del turno</div>
-            <div class="card-sub">Se completa automáticamente</div></div>
-        </div>
-        <div class="card-body">
-          <div class="grid2">
-            <div class="field">
-              <span class="lbl">Fecha <span class="req">*</span></span>
-              <input type="date" id="f-fecha" readonly style="background:var(--gray);cursor:default;font-weight:600">
-            </div>
-            <div class="field">
-              <span class="lbl">Turno <span class="req">*</span></span>
-              <div class="chip-row" id="r-turno">
-                <div class="chip" onclick="selChip('turno','Mañana',this)">Mañana</div>
-                <div class="chip" onclick="selChip('turno','Tarde',this)">Tarde</div>
-                <div class="chip" onclick="selChip('turno','Noche',this)">Noche</div>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <span class="lbl">Técnico</span>
-            <input type="text" id="f-correo" readonly style="background:var(--gray);font-size:12px;color:var(--text2)">
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <div class="card-icon ci-amber">⬡</div>
-          <div><div class="card-title">Selecciona la codificadora</div>
-            <div class="card-sub">Toca la que vas a reportar</div></div>
-        </div>
-        <div class="card-body">
-          <div class="cod-grid" id="cod-grid"></div>
-        </div>
-      </div>
-
-    </div><!-- /paso-1 -->
-
-    <!-- ── PASO 2: ACTIVIDADES ── -->
-    <div id="paso-2" style="display:none">
-
-      <!-- Pre-operacional -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-icon ci-blue">✓</div>
-          <div><div class="card-title">Lista pre-operacional</div>
-            <div class="card-sub">Marca lo que verificaste</div></div>
-        </div>
-        <div class="card-body">
-          <div class="chk-list" id="preop-list"></div>
-          <div class="prog-wrap">
-            <div class="prog-ring">
-              <svg width="44" height="44" viewBox="0 0 44 44">
-                <circle cx="22" cy="22" r="18" fill="none" stroke="#e8e5e0" stroke-width="4"/>
-                <circle id="prog-circle" cx="22" cy="22" r="18" fill="none" stroke="#27AE60" stroke-width="4"
-                  stroke-dasharray="113" stroke-dashoffset="113" stroke-linecap="round"/>
-              </svg>
-              <div class="prog-txt" id="prog-pct">0%</div>
-            </div>
-            <div class="prog-label">
-              <strong id="prog-label-main">0 de 10 ítems</strong>
-              <span id="prog-label-crit">— ítems críticos pendientes</span>
-            </div>
-          </div>
-          <div class="field" style="margin-top:12px">
-            <span class="lbl">Observaciones pre-op</span>
-            <textarea id="f-preop-obs" placeholder="Estado al arranque, alarmas, acciones..." rows="2"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- Parámetros técnicos -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-icon ci-purple">⚙</div>
-          <div><div class="card-title">Parámetros técnicos</div>
-            <div class="card-sub">Punto de control — valores actuales del equipo</div></div>
-        </div>
-        <div class="card-body">
-          <div class="grid2">
-            <div class="field">
-              <span class="lbl">Viscosidad <span class="hint">(s)</span></span>
-              <input type="number" id="f-visc" step="0.1" placeholder="42" oninput="checkParam('visc',this.value,CFG.visc_min,CFG.visc_max,'st-visc')">
-              <div id="st-visc" class="param-badge pb-none"></div>
-            </div>
-            <div class="field">
-              <span class="lbl">Presión <span class="hint">(mbar)</span></span>
-              <input type="number" id="f-pres" step="1" placeholder="45" oninput="checkParam('pres',this.value,35,55,'st-pres')">
-              <div id="st-pres" class="param-badge pb-none"></div>
-            </div>
-            <div class="field">
-              <span class="lbl">Temperatura <span class="hint">(°C)</span></span>
-              <input type="number" id="f-temp" step="0.5" placeholder="25"></div>
-            <div class="field">
-              <span class="lbl">Drop Velocity <span class="hint">(m/s)</span></span>
-              <input type="number" id="f-dv" step="0.1" placeholder="18" oninput="checkParam('dv',this.value,14,22,'st-dv')">
-              <div id="st-dv" class="param-badge pb-none"></div>
-            </div>
-            <div class="field">
-              <span class="lbl">Vel. línea <span class="hint">(m/min)</span></span>
-              <input type="number" id="f-vel" step="1" placeholder="80"></div>
-            <div class="field">
-              <span class="lbl">Horas acumuladas</span>
-              <input type="number" id="f-horas" step="1" placeholder="8540"></div>
-          </div>
-          <div class="field">
-            <span class="lbl">¿Parámetros dentro de rango? <span class="req">*</span></span>
-            <div class="chip-row" id="r-params-ok">
-              <div class="chip sel-green" onclick="selChip('params_ok','Sí — todos OK',this)">✓ Todos OK</div>
-              <div class="chip sel-red"   onclick="selChip('params_ok','No — fuera de rango',this)">✗ Fuera de rango</div>
-            </div>
-          </div>
-          <div class="field" id="params-obs-field" style="display:none">
-            <span class="lbl">Observaciones parámetros <span class="req">*</span></span>
-            <textarea id="f-params-obs" placeholder="Indicar cuál parámetro, valor medido y acción tomada..."></textarea>
-          </div>
-          <div class="grid2">
-            <div class="field">
-              <span class="lbl">Lote tinta activo <span class="req">*</span></span>
-              <input type="text" id="f-lote-t" placeholder="INK-2026-084">
-            </div>
-            <div class="field">
-              <span class="lbl">Lote disolvente activo <span class="req">*</span></span>
-              <input type="text" id="f-lote-s" placeholder="SOL-2026-031">
-            </div>
-          </div>
-          <div class="field">
-            <span class="lbl">Recarga en este turno</span>
-            <div class="chip-row" id="r-recarga">
-              <div class="chip sel-green" onclick="selChip('recarga','No',this);toggleVol(false)">No</div>
-              <div class="chip sel-amber" onclick="selChip('recarga','Sí — tinta',this);toggleVol(true)">Tinta</div>
-              <div class="chip sel-amber" onclick="selChip('recarga','Sí — disolvente',this);toggleVol(true)">Disolvente</div>
-              <div class="chip sel-amber" onclick="selChip('recarga','Sí — ambos',this);toggleVol(true)">Ambos</div>
-            </div>
-          </div>
-          <div id="vol-field" style="display:none" class="field">
-            <span class="lbl">Volumen recargado (mL)</span>
-            <input type="number" id="f-vol" placeholder="500">
-          </div>
-        </div>
-      </div>
-
-      <!-- PM ejecutado -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-icon ci-green">🔧</div>
-          <div><div class="card-title">Actividades PM ejecutadas</div>
-            <div class="card-sub">Marca todo lo que realizaste en este turno</div></div>
-        </div>
-        <div class="card-body">
-          <div class="chk-list" id="pm-list"></div>
-          <div class="field" style="margin-top:12px">
-            <span class="lbl">¿Requiere correctivo? <span class="req">*</span></span>
-            <div class="chip-row" id="r-correctivo">
-              <div class="chip sel-green" onclick="selChip('correctivo','No',this)">No</div>
-              <div class="chip sel-amber" onclick="selChip('correctivo','Sí — en proceso',this)">En proceso</div>
-              <div class="chip sel-red"   onclick="selChip('correctivo','Equipo fuera de servicio',this)">Fuera de servicio</div>
-            </div>
-          </div>
-          <div class="field">
-            <span class="lbl">Observaciones generales</span>
-            <textarea id="f-obs" placeholder="Resumen del turno, novedades, alertas para el siguiente técnico..." rows="3"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- Foto de evidencia -->
-      <div class="card">
-        <div class="card-head">
-          <div class="card-icon ci-amber">📷</div>
-          <div><div class="card-title">Foto de evidencia</div>
-            <div class="card-sub">Se sube automáticamente a Drive Dejamu</div></div>
-        </div>
-        <div class="card-body">
-          <div id="foto-zone-wrap">
-            <div class="foto-zone" id="foto-zone">
-              <input type="file" accept="image/*" capture="environment" id="foto-input" onchange="previewFoto(this)">
-              <div class="fz-icon">📷</div>
-              <div class="fz-text">Toca para tomar foto</div>
-              <div class="fz-hint">o selecciona desde galería</div>
-            </div>
-          </div>
-          <div id="foto-preview-wrap" style="display:none">
-            <div class="foto-preview">
-              <img id="foto-img" src="" alt="Evidencia">
-              <button class="foto-del" onclick="eliminarFoto()">✕ Cambiar</button>
-            </div>
-            <div style="font-size:11px;color:var(--text3);margin-top:6px" id="foto-info"></div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /paso-2 -->
-
-  </div><!-- /content -->
-
-  <!-- Bottom bar -->
-  <div class="bottom-bar">
-    <button class="btn btn-prev" id="btn-prev" onclick="irPaso(1)" style="display:none">←</button>
-    <button class="btn btn-next" id="btn-next" onclick="avanzar()">Siguiente →</button>
-    <button class="btn btn-send" id="btn-send" style="display:none" onclick="enviar()">Enviar reporte ✓</button>
-  </div>
-
-</div><!-- /screen-app -->
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     CONFIG MODAL (gestor)
-══════════════════════════════════════════════════════════════════════════════ -->
-<div class="overlay" id="overlay-cfg">
-  <div class="modal">
-    <h3>⚙ Configuración</h3>
-    <div class="field"><span class="lbl">URL del Apps Script (Web App)</span>
-      <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/.../exec"></div>
-    <div class="field"><span class="lbl">Google Client ID (OAuth)</span>
-      <input type="text" id="cfg-client-id" placeholder="XXXXXXXXXX.apps.googleusercontent.com"></div>
-    <div class="field"><span class="lbl">N° de codificadoras</span>
-      <input type="number" id="cfg-num-cod" value="12" min="1" max="50"></div>
-    <div class="field"><span class="lbl">Viscosidad min / max (s)</span>
-      <div style="display:flex;gap:8px">
-        <input type="number" id="cfg-visc-min" value="38" style="width:80px">
-        <span style="align-self:center;color:var(--text3)">—</span>
-        <input type="number" id="cfg-visc-max" value="52" style="width:80px">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="cerrarConfig()">Cancelar</button>
-      <button class="btn btn-next" onclick="guardarConfig()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     SCRIPT
-══════════════════════════════════════════════════════════════════════════════ -->
 <script>
-// ── CONFIG ────────────────────────────────────────────────────────────────────
-let CFG = {
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbytxZro84o5N9qx9hgpFjwrHbnpafytH6QfS0KA3KehQP8z-Pksn-n_5xe9YpOq4mSY/exec',
-  CLIENT_ID: '535423614502-tr892cs3r6b7csl14ef0q65nhupjcrfn.apps.googleusercontent.com',
-  num_cod: 12,
-  visc_min: 38,
-  visc_max: 52
-};
+const API_URL = 'https://script.google.com/macros/s/AKfycbyHE0Y-nP19PfPFndNkxlsy8lmdYzcicBL4AcV4sVCK4BkGTwHbHizoDLlCwUZM7qVG/exec';
+const CLIENT_ID = '22939874565-e53j3p3oar2l9tqtcbhtn8o6lecbsmq9.apps.googleusercontent.com';
 
-// ── ESTADO ────────────────────────────────────────────────────────────────────
-let USER = { correo: '', nombre: '' };
-let VALS = { turno:'', codificadora:'', params_ok:'', recarga:'No', correctivo:'', preop_items:[], pm_items:[] };
-let fotoData = { base64:'', nombre:'', tipo:'' };
-let pasoActual = 1;
+const qs = new URLSearchParams(location.search);
+const S = { a: (qs.get('a') || '').trim().toUpperCase(), k: (qs.get('k') || '').trim(), token: null, tec: null, data: null,
+            hv: { filtro: 'TODO', pagina: 0, items: [], total: 0 } };
+const app = document.getElementById('app');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const chip = c => c === 'AT' ? '<span class="chip at">AT · a tiempo</span>' : c === 'EX' ? '<span class="chip ex">EX · extemporánea</span>'
+                 : c === 'NE' ? '<span class="chip ne">NE · no ejecutada</span>' : '';
 
-const HOY = new Date().toISOString().split('T')[0];
-document.getElementById('f-fecha').value = HOY;
-
-// ── CODIFICADORAS ─────────────────────────────────────────────────────────────
-function buildCodGrid() {
-  const grid = document.getElementById('cod-grid');
-  grid.innerHTML = '';
-  for(let i=1; i<=CFG.num_cod; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'cod-btn';
-    btn.id = 'cod-'+i;
-    btn.innerHTML = `<span class="cod-num">${i}</span><span class="cod-lbl">Cod.</span>`;
-    btn.onclick = () => selCod(i, btn);
-    grid.appendChild(btn);
-  }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), 4000);
 }
+function cargando(txt) { app.innerHTML = `<div class="wrap pad center"><div class="spin" aria-hidden="true"></div><span class="muted">${esc(txt || 'Cargando…')}</span></div>`; }
 
-function selCod(n, el) {
-  document.querySelectorAll('.cod-btn').forEach(b=>b.classList.remove('sel'));
-  el.classList.add('sel');
-  VALS.codificadora = 'Codificadora '+n;
+/* ---------- Sesión Google ---------- */
+function jwtExp(t) { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp * 1000; } catch (e) { return 0; } }
+function guardarToken(t) { S.token = t; try { sessionStorage.setItem('mtto_t', t); } catch (e) {} }
+function tokenGuardado() { try { const t = sessionStorage.getItem('mtto_t'); return t && jwtExp(t) > Date.now() + 60000 ? t : null; } catch (e) { return null; } }
+function salir() {
+  try { sessionStorage.removeItem('mtto_t'); } catch (e) {}
+  S.token = null; S.tec = null;
+  if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+  vistaLogin();
 }
+document.getElementById('salir').onclick = salir;
 
-// ── PREOP ─────────────────────────────────────────────────────────────────────
-const PREOP_ITEMS = [
-  { id:'p1', txt:'Nivel tinta > 25%', crit:true },
-  { id:'p2', txt:'Nivel disolvente > 25%', crit:true },
-  { id:'p3', txt:'Cabezal y camisa limpios', crit:true },
-  { id:'p4', txt:'Chorro correcto — sin goteo', crit:true },
-  { id:'p5', txt:'Presión dentro de rango', crit:true },
-  { id:'p6', txt:'Sin alarmas en pantalla', crit:true },
-  { id:'p7', txt:'Pantalla calibrada', crit:false },
-  { id:'p8', txt:'Sensor OK', crit:false },
-  { id:'p9', txt:'Mensaje cargado y verificado', crit:true },
-  { id:'p10', txt:'Prueba impresión aprobada', crit:true },
-];
-const PM_ITEMS = [
-  'Limpieza cabezal / camisa',
-  'Verificación chorro',
-  'Flush completo',
-  'Calibración pantalla',
-  'Revisión sensores / eléctrica',
-  'Control consumo tinta',
-  'Limpieza interna',
-  'Revisión filtros',
-  'Limpieza estructural',
-];
-
-function buildChkList(containerId, items, stateKey) {
-  const list = document.getElementById(containerId);
-  list.innerHTML = '';
-  items.forEach(item => {
-    const label = typeof item === 'string' ? item : item.txt;
-    const id    = typeof item === 'string' ? item : item.id;
-    const crit  = item.crit || false;
-    const div = document.createElement('div');
-    div.className = 'chk-item';
-    div.innerHTML = `<div class="chk-check"></div><span class="chk-text">${label}</span>${crit?'<span class="chk-crit">★</span>':''}`;
-    div.onclick = () => toggleChk(div, id, label, stateKey);
-    list.appendChild(div);
-  });
-}
-
-function toggleChk(div, id, label, stateKey) {
-  const checked = div.classList.toggle('checked');
-  div.querySelector('.chk-check').textContent = checked ? '✓' : '';
-  if(checked) { if(!VALS[stateKey].includes(label)) VALS[stateKey].push(label); }
-  else { VALS[stateKey] = VALS[stateKey].filter(v=>v!==label); }
-  if(stateKey==='preop_items') updatePreopProg();
-}
-
-function updatePreopProg() {
-  const tot = PREOP_ITEMS.length;
-  const ok  = VALS.preop_items.length;
-  const pct = Math.round(ok/tot*100);
-  const circ = document.getElementById('prog-circle');
-  const circumference = 113;
-  circ.style.strokeDashoffset = circumference - (circumference * pct/100);
-  document.getElementById('prog-pct').textContent = pct+'%';
-  document.getElementById('prog-label-main').textContent = ok+' de '+tot+' ítems';
-  const critPend = PREOP_ITEMS.filter(p=>p.crit&&!VALS.preop_items.includes(p.txt)).length;
-  const cTxt = document.getElementById('prog-label-crit');
-  cTxt.textContent = critPend > 0 ? `⚠ ${critPend} crítico(s) pendiente(s)` : '✓ Todos los críticos OK';
-  cTxt.style.color = critPend > 0 ? 'var(--amber)' : 'var(--green)';
-}
-
-// ── CHIP SELECTOR ─────────────────────────────────────────────────────────────
-function selChip(campo, valor, el) {
-  el.closest('.chip-row').querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');
-  VALS[campo] = valor;
-  if(campo==='params_ok') {
-    document.getElementById('params-obs-field').style.display =
-      valor==='No — fuera de rango' ? 'block' : 'none';
-  }
-}
-
-function toggleVol(show) {
-  document.getElementById('vol-field').style.display = show ? 'block' : 'none';
-}
-
-// ── PARÁMETROS CHECK ──────────────────────────────────────────────────────────
-function checkParam(id, val, min, max, badgeId) {
-  const badge = document.getElementById(badgeId);
-  if(!val) { badge.className='param-badge pb-none'; badge.textContent=''; return; }
-  const v = parseFloat(val);
-  const ok = v>=min && v<=max;
-  badge.className = 'param-badge '+(ok?'pb-ok':'pb-warn');
-  badge.textContent = ok ? '✓ OK ('+min+'–'+max+')' : '⚠ Fuera de rango ('+min+'–'+max+')';
-}
-
-// ── FOTO ──────────────────────────────────────────────────────────────────────
-function previewFoto(input) {
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const data = e.target.result;
-    const base64 = data.split(',')[1];
-    fotoData.base64 = base64;
-    fotoData.tipo   = file.type;
-    fotoData.nombre = `${VALS.codificadora||'cod'}_${HOY}_${Date.now()}.jpg`.replace(/ /g,'_');
-    document.getElementById('foto-img').src = data;
-    document.getElementById('foto-zone-wrap').style.display = 'none';
-    document.getElementById('foto-preview-wrap').style.display = 'block';
-    document.getElementById('foto-info').textContent = fotoData.nombre + ' · '+Math.round(file.size/1024)+' KB';
+function vistaLogin(msg) {
+  document.getElementById('salir').classList.add('hidden');
+  app.innerHTML = `<div class="wrap pad">
+    ${S.a ? `<div class="card" style="padding:20px"><span class="muted">Activo escaneado</span>
+      <span class="code" style="font-size:28px">${esc(S.a)}</span></div>` :
+      `<div class="note info">Escanea el código QR de un equipo o área para ver sus tareas y registrar.</div>`}
+    ${msg ? `<div class="note err">${esc(msg)}</div>` : ''}
+    <p style="margin:0;font-size:15px;line-height:1.5">Inicia sesión con tu cuenta Google autorizada.</p>
+    <div id="gbtn" style="min-height:44px;display:flex;justify-content:center"></div>
+    <div class="note info">Solo técnicos registrados y activos. Cada acceso queda registrado.</div></div>`;
+  const pintar = () => {
+    if (!(window.google && google.accounts && google.accounts.id)) return setTimeout(pintar, 200);
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: r => { guardarToken(r.credential); iniciar(); },
+                                    auto_select: true, cancel_on_tap_outside: false });
+    google.accounts.id.renderButton(document.getElementById('gbtn'),
+      { theme: 'outline', size: 'large', text: 'continue_with', shape: 'rectangular', width: 300, locale: 'es' });
   };
-  reader.readAsDataURL(file);
+  pintar();
 }
 
-function eliminarFoto() {
-  fotoData = { base64:'', nombre:'', tipo:'' };
-  document.getElementById('foto-input').value = '';
-  document.getElementById('foto-zone-wrap').style.display = 'block';
-  document.getElementById('foto-preview-wrap').style.display = 'none';
+function vistaDenegado(msg) {
+  document.getElementById('salir').classList.add('hidden');
+  app.innerHTML = `<div class="wrap pad center" style="padding-top:48px">
+    <div style="width:72px;height:72px;border-radius:36px;background:var(--ne-soft);display:flex;align-items:center;justify-content:center">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#8E1F1F" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <h1 style="font-size:22px;margin:0">Acceso no autorizado</h1>
+    <p style="margin:0;color:#3D4450;line-height:1.5">${esc(msg)}</p>
+    <p class="muted" style="line-height:1.5;margin:0">Si debes tener acceso, pide al Gestor de Desarrollo que te agregue a la lista de técnicos autorizados.</p>
+    <button class="btn ghost" type="button" id="otra">Usar otra cuenta</button></div>`;
+  document.getElementById('otra').onclick = salir;
 }
 
-// ── NAVEGACIÓN ────────────────────────────────────────────────────────────────
-function irPaso(n) {
-  document.getElementById('paso-1').style.display = n===1 ? 'block' : 'none';
-  document.getElementById('paso-2').style.display = n===2 ? 'block' : 'none';
-  document.getElementById('stab-1').className = 'step-tab'+(n===1?' active':' done');
-  document.getElementById('stab-2').className = 'step-tab'+(n===2?' active':'');
-  document.getElementById('btn-prev').style.display  = n===2 ? 'inline-flex' : 'none';
-  document.getElementById('btn-next').style.display  = n===1 ? 'inline-flex' : 'none';
-  document.getElementById('btn-send').style.display  = n===2 ? 'inline-flex' : 'none';
-  pasoActual = n;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function avanzar() {
-  // Validar paso 1
-  if(!VALS.turno)          { shake('r-turno');   return; }
-  if(!VALS.codificadora)   { shake('cod-grid');  return; }
-  irPaso(2);
-}
-
-function shake(id) {
-  const el = document.getElementById(id);
-  el.style.outline = '2px solid #c04040';
-  el.style.borderRadius = '8px';
-  setTimeout(()=>{ el.style.outline=''; el.style.borderRadius=''; }, 1200);
-  el.scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-// ── ENVÍO ─────────────────────────────────────────────────────────────────────
-async function enviar() {
-  if(!CFG.APPS_SCRIPT_URL) {
-    alert('⚙ Configura la URL del Apps Script primero (toca tu correo en la barra superior).');
-    return;
-  }
-  if(!VALS.params_ok)  { shake('r-params-ok'); return; }
-  if(!VALS.correctivo) { shake('r-correctivo'); return; }
-
-  const btn = document.getElementById('btn-send');
-  btn.disabled = true;
-  btn.textContent = 'Enviando…';
-
-  const payload = {
-    correo:         USER.correo,
-    codificadora:   VALS.codificadora,
-    fecha:          document.getElementById('f-fecha').value,
-    turno:          VALS.turno,
-    preop_items:    VALS.preop_items.join(' | '),
-    preop_criticos: PREOP_ITEMS.filter(p=>p.crit&&!VALS.preop_items.includes(p.txt)).length,
-    preop_obs:      document.getElementById('f-preop-obs').value,
-    viscosidad:     document.getElementById('f-visc').value,
-    presion:        document.getElementById('f-pres').value,
-    temperatura:    document.getElementById('f-temp').value,
-    drop_v:         document.getElementById('f-dv').value,
-    vel_linea:      document.getElementById('f-vel').value,
-    horas:          document.getElementById('f-horas').value,
-    params_ok:      VALS.params_ok,
-    params_obs:     document.getElementById('f-params-obs').value,
-    lote_tinta:     document.getElementById('f-lote-t').value,
-    lote_solvente:  document.getElementById('f-lote-s').value,
-    recarga:        VALS.recarga,
-    vol_recargado:  document.getElementById('f-vol').value,
-    pm_actividades: VALS.pm_items.join(' | '),
-    correctivo:     VALS.correctivo,
-    observaciones:  document.getElementById('f-obs').value,
-    foto_base64:    fotoData.base64,
-    foto_nombre:    fotoData.nombre,
-    foto_tipo:      fotoData.tipo,
-  };
-
-  try {
-    const res = await fetch(CFG.APPS_SCRIPT_URL, {
-      method: 'POST',
-      body:   JSON.stringify(payload),
-    });
-    const json = await res.json();
-    mostrarResultado(json.ok !== false, json.fotoUrl);
-  } catch(e) {
-    mostrarResultado(false);
-  }
-}
-
-function mostrarResultado(ok, fotoUrl) {
-  const content = document.querySelector('.content');
-  const bottomBar = document.querySelector('.bottom-bar');
-  content.innerHTML = ok
-    ? `<div class="result-screen">
-         <span class="r-icon">✅</span>
-         <h2 style="color:var(--green)">Reporte enviado</h2>
-         <p>Codificadora: <strong>${VALS.codificadora}</strong></p>
-         <p>Técnico: ${USER.correo}</p>
-         ${fotoUrl ? `<p><a href="${fotoUrl}" target="_blank" style="color:var(--blue-m)">Ver foto en Drive →</a></p>` : ''}
-         <button class="btn btn-next" style="margin-top:24px;max-width:280px;width:100%" onclick="nuevoReporte()">Nuevo reporte</button>
-       </div>`
-    : `<div class="result-screen">
-         <span class="r-icon">⚠️</span>
-         <h2 style="color:var(--red)">Error al enviar</h2>
-         <p>Verifica la conexión y la URL del Apps Script.</p>
-         <button class="btn btn-next" style="margin-top:24px;max-width:280px;width:100%" onclick="location.reload()">Reintentar</button>
-       </div>`;
-  bottomBar.style.display = 'none';
-}
-
-function nuevoReporte() {
-  location.reload();
-}
-
-// ── GOOGLE OAUTH ──────────────────────────────────────────────────────────────
-function initGoogleSignIn() {
-  if(!CFG.CLIENT_ID) {
-    document.getElementById('g-signin-btn').style.display = 'none';
-    document.getElementById('login-no-btn').style.display = 'block';
-    return;
-  }
-  document.getElementById('g-signin-btn').style.display = 'flex';
-  document.getElementById('login-no-btn').style.display = 'none';
-  google.accounts.id.initialize({
-    client_id: CFG.CLIENT_ID,
-    callback:  handleCredential,
-    auto_select: false,
-  });
-  google.accounts.id.renderButton(
-    document.getElementById('g-signin-btn'),
-    { theme:'outline', size:'large', width:280, text:'signin_with', locale:'es' }
-  );
-  // Intentar login silencioso si ya inició sesión
-  google.accounts.id.prompt();
-}
-
-function handleCredential(response) {
-  const payload = parseJwt(response.credential);
-  USER.correo = payload.email || '';
-  USER.nombre = payload.name  || payload.email || '';
-  document.getElementById('f-correo').value = USER.correo;
-  document.getElementById('user-email-display').textContent = USER.correo;
-  document.getElementById('user-initials').textContent = (USER.nombre||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-  document.getElementById('screen-login').style.display = 'none';
-  document.getElementById('screen-app').style.display   = 'flex';
-  localStorage.setItem('dejamu_user', JSON.stringify(USER));
-}
-
-function parseJwt(token) {
-  try { return JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); }
-  catch(e) { return {}; }
-}
-
-// ── CONFIG ────────────────────────────────────────────────────────────────────
-function abrirConfig() { document.getElementById('overlay-cfg').classList.add('show'); }
-function cerrarConfig() { document.getElementById('overlay-cfg').classList.remove('show'); }
-function guardarConfig() {
-  const url = document.getElementById('cfg-url').value.trim();
-  const cid = document.getElementById('cfg-client-id').value.trim();
-  if(!cid) {
-    document.getElementById('cfg-client-id').style.borderColor = '#c04040';
-    document.getElementById('cfg-client-id').placeholder = '⚠ Requerido — pega el Client ID aquí';
-    document.getElementById('cfg-client-id').focus();
-    return;
-  }
-  CFG.APPS_SCRIPT_URL = url;
-  CFG.CLIENT_ID       = cid;
-  CFG.num_cod         = parseInt(document.getElementById('cfg-num-cod').value)||12;
-  CFG.visc_min        = parseFloat(document.getElementById('cfg-visc-min').value)||38;
-  CFG.visc_max        = parseFloat(document.getElementById('cfg-visc-max').value)||52;
-  localStorage.setItem('dejamu_cfg', JSON.stringify(CFG));
-  buildCodGrid();
-  cerrarConfig();
-  if(typeof google !== 'undefined' && CFG.CLIENT_ID) {
-    initGoogleSignIn();
-  } else {
-    document.getElementById('g-signin-btn').style.display = 'none';
-    document.getElementById('login-no-btn').innerHTML =
-      '<div style="font-size:12px;color:#1B6B3A;margin-bottom:12px">✓ Client ID guardado.<br>Recarga la página para activar el login de Google.</div>' +
-      '<button onclick="location.reload()" style="width:100%;padding:11px;background:#1F4E79;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">🔄 Recargar y hacer login</button>';
-    document.getElementById('login-no-btn').style.display = 'block';
-  }
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-(function init() {
-  // Cargar config
-  try {
-    const c = localStorage.getItem('dejamu_cfg');
-    if(c) { Object.assign(CFG, JSON.parse(c)); }
-  } catch(e){}
-  // Restaurar campos config
-  document.getElementById('cfg-url').value       = CFG.APPS_SCRIPT_URL;
-  document.getElementById('cfg-client-id').value = CFG.CLIENT_ID;
-  document.getElementById('cfg-num-cod').value   = CFG.num_cod;
-  document.getElementById('cfg-visc-min').value  = CFG.visc_min;
-  document.getElementById('cfg-visc-max').value  = CFG.visc_max;
-  // Restaurar sesión guardada
-  try {
-    const u = localStorage.getItem('dejamu_user');
-    if(u) {
-      const usr = JSON.parse(u);
-      USER = usr;
-      document.getElementById('f-correo').value = usr.correo;
-      document.getElementById('user-email-display').textContent = usr.correo;
-      document.getElementById('user-initials').textContent = (usr.nombre||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+/* ---------- API ---------- */
+async function api(accion, datos) {
+  const body = JSON.stringify(Object.assign({ accion, idToken: S.token, a: S.a, k: S.k }, datos || {}));
+  let res;
+  for (let intento = 0; intento < 2; intento++) {
+    try { res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body }); break; }
+    catch (e) {
+      if (intento === 1) throw new Error('No se pudo conectar con el servidor. Revisa la conexión a internet e intenta de nuevo.');
+      await new Promise(r => setTimeout(r, 1500));
     }
-  } catch(e){}
-  buildCodGrid();
-  buildChkList('preop-list', PREOP_ITEMS, 'preop_items');
-  buildChkList('pm-list',    PM_ITEMS,    'pm_items');
-  // Si hay usuario guardado, ir directo a la app
-  if(USER.correo && CFG.CLIENT_ID) {
-    document.getElementById('screen-login').style.display = 'none';
-    document.getElementById('screen-app').style.display   = 'flex';
   }
-  // Cerrar modal al tocar fuera
-  document.getElementById('overlay-cfg').addEventListener('click', function(e){
-    if(e.target===this) cerrarConfig();
-  });
-  // Mostrar estado correcto en login (con o sin Client ID)
-  initGoogleSignIn();
-})();
+  const j = await res.json();
+  if (!j.ok) {
+    if (j.code === 'NO_AUTORIZADO') {
+      if (/no está autorizada/.test(j.error)) { vistaDenegado(j.error); }
+      else { try { sessionStorage.removeItem('mtto_t'); } catch (e) {} vistaLogin('Tu sesión venció. Inicia sesión de nuevo.'); }
+      throw Object.assign(new Error(j.error), { manejado: true });
+    }
+    throw new Error(j.error || 'Error del servidor');
+  }
+  return j;
+}
 
-// Google GSI se inicializa cuando el script externo carga
-window.onload = function() {
-  if(typeof google !== 'undefined') initGoogleSignIn();
-};
+async function iniciar() {
+  cargando('Verificando acceso…');
+  try {
+    const s = await api('sesion');
+    S.tec = s.tecnico;
+    document.getElementById('salir').classList.remove('hidden');
+    if (!S.a) return vistaSinActivo();
+    await cargarActivo();
+  } catch (e) { if (!e.manejado) vistaError(e.message); }
+}
+
+function vistaError(msg) {
+  app.innerHTML = `<div class="wrap pad"><div class="note err">${esc(msg)}</div>
+    <button class="btn" type="button" onclick="location.reload()">Reintentar</button></div>`;
+}
+
+function buscadorHTML() {
+  return `<div><label class="f" for="bq">Buscar equipo o área sin QR</label>
+    <div class="search"><input id="bq" class="in" placeholder="Código, nombre o sector (E036, marmita, ptap)" autocomplete="off">
+    <button class="btn" id="bgo" type="button">Buscar</button></div></div><div id="bres" class="res"></div>`;
+}
+function activarBuscador() {
+  const inp = document.getElementById('bq'), out = document.getElementById('bres');
+  const run = async () => {
+    const q = inp.value.trim();
+    if (q.length < 2) { out.innerHTML = '<span class="muted">Escribe al menos 2 caracteres.</span>'; return; }
+    out.innerHTML = '<span class="muted">Buscando…</span>';
+    try {
+      const r = await api('buscar', { q });
+      out.innerHTML = r.resultados.length ? r.resultados.map(x =>
+        `<button type="button" data-cod="${esc(x.codigo)}"><span class="row"><span class="code">${esc(x.codigo)}</span>
+          <span class="chip gr">${esc(x.tipo === 'AREA' ? 'Área' : 'Equipo')}</span></span>
+          <span style="font-weight:500">${esc(x.nombre)}</span>${x.sector ? `<span class="muted">${esc(x.sector)}</span>` : ''}</button>`).join('')
+        : '<div class="empty">Sin resultados. Prueba con otra palabra o con el código.</div>';
+      out.querySelectorAll('[data-cod]').forEach(b => b.onclick = () => irActivo(b.dataset.cod));
+    } catch (e) { if (!e.manejado) out.innerHTML = `<div class="note err">${esc(e.message)}</div>`; }
+  };
+  document.getElementById('bgo').onclick = run;
+  inp.onkeydown = e => { if (e.key === 'Enter') run(); };
+}
+function irActivo(cod) {
+  S.a = cod; S.k = ''; S.hv = { filtro: 'TODO', pagina: 0, items: [], total: 0 };
+  try { history.replaceState(null, '', location.pathname + '?a=' + encodeURIComponent(cod)); } catch (e) {}
+  cargarActivo();
+}
+
+function vistaSinActivo() {
+  app.innerHTML = `<div class="wrap pad">
+    <div class="note info">Sesión iniciada como <b>${esc(S.tec.nombre)}</b>. Escanea el QR de un equipo o búscalo aquí.</div>
+    ${buscadorHTML()}
+    <p class="muted" style="margin:0">${S.tec.permisos.anular ? 'Como supervisor puedes registrar sin QR; el registro quedará marcado como manual.'
+      : 'Sin escanear el QR puedes consultar, pero para registrar debes escanear el código del equipo.'}</p></div>`;
+  activarBuscador();
+}
+
+/* ---------- Activo y pendientes ---------- */
+async function cargarActivo() {
+  cargando('Cargando ' + S.a + '…');
+  try { S.data = await api('activo'); vistaActivo(); }
+  catch (e) { if (!e.manejado) vistaError(e.message); }
+}
+
+function cabecera(tab) {
+  const a = S.data.activo;
+  return `<div class="head"><div class="row"><span class="code">${esc(a.codigo)}</span>
+      <span class="chip ${a.estado === 'ACTIVO' ? 'at' : 'gr'}">${esc(a.estado || '')}</span></div>
+    <span class="name">${esc(a.nombre)}</span>
+    <span class="muted">${a.sector ? esc(a.sector) + ' · ' : ''}Responsable: ${esc(a.responsable || 'sin asignar')}</span>
+    <span class="muted">Sesión: <b>${esc(S.tec.nombre)}</b> · ${esc(S.tec.rol)}</span></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" type="button" aria-selected="${tab === 'p'}" onclick="vistaActivo()">Pendientes</button>
+    <button role="tab" type="button" aria-selected="${tab === 'h'}" onclick="abrirHojaVida()">Hoja de vida</button></div>`;
+}
+
+function tarjeta(p, tipo) {
+  const ok = S.data.puedeRegistrar;
+  const cls = tipo === 'venc' ? 'ex' : tipo === 'int' ? 'outline' : '';
+  const det = tipo === 'venc' ? `Programada ${esc(p.quincena)} · se cierra como NE al terminar ${esc(p.cierraNE || '')}`
+            : tipo === 'int' ? `${esc(p.frecuencia)} · última: ${esc(p.ultima || 'sin registro')} · vence ${esc(p.vence)}`
+            : esc(p.frecuencia);
+  const asig = p.mia ? '<span class="chip mine">Asignada a ti</span>'
+             : `<span class="chip gr">${esc(p.asignado ? 'Asignada a ' + p.asignado : 'Sin asignar')}</span>`;
+  return `<div class="card" ${tipo === 'venc' ? 'style="border-color:var(--ex-line)"' : ''}>
+    <div class="row"><span class="code">${esc(p.codigo)}</span>${tipo === 'venc' ? '<span class="chip ex">Vencida</span>' : ''}</div>
+    <span style="font-size:15px;font-weight:500">${esc(p.descripcion)}</span>
+    <span class="muted">${det}</span>
+    <div>${asig}</div>
+    ${ok ? `<button type="button" class="btn ${cls}" onclick='abrirForm(${JSON.stringify(p.codigo)})'>Ejecutar${tipo === 'venc' ? ' (se registra EX)' : ''}</button>` : ''}</div>`;
+}
+
+function vistaActivo() {
+  const d = S.data, p = d.pendientes;
+  const pct = d.resumen.programadas ? Math.round(100 * d.resumen.ejecutadas / d.resumen.programadas) : 0;
+  const bloque = (titulo, cls, lista, tipo, vacio) => `<span class="sec ${cls}">${titulo} (${lista.length})</span>` +
+    (lista.length ? lista.map(x => tarjeta(x, tipo)).join('') : `<div class="empty">${vacio}</div>`);
+  app.innerHTML = cabecera('p') + `<div class="wrap pad">
+    ${d.modo === 'MANUAL' ? `<div class="note info">Acceso manual, sin QR. Los registros quedarán marcados como manuales.</div>` : ''}
+    ${d.modo === 'CONSULTA' ? `<div class="note warn">Para registrar actividades escanea el código QR pegado en el equipo. Desde aquí solo puedes consultar.</div>` : ''}
+    <div class="qband"><div class="row"><span class="code" style="font-size:18px">${esc(d.quincena.etiqueta)}</span>
+      <span style="font-size:13px">${esc(d.quincena.inicio)} a ${esc(d.quincena.fin)}</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <span style="font-size:13px">${d.resumen.ejecutadas} de ${d.resumen.programadas} tareas de la quincena ejecutadas</span></div>
+    ${p.vencidas.length ? bloque('Vencidas, aún subsanables', 'ex', p.vencidas, 'venc', '') : ''}
+    ${bloque('Pendientes de esta quincena', 'pr', p.actuales, 'act', 'No hay tareas pendientes en esta quincena.')}
+    ${p.intervalo.length ? bloque('Por intervalo, próximas a vencer', 'gr', p.intervalo, 'int', '') : ''}
+    <span class="sec at">Ejecutadas esta quincena (${d.ejecutadas.length})</span>
+    ${d.ejecutadas.length ? d.ejecutadas.map(e => `<div class="card" style="padding:12px 14px"><div class="row">
+      <div><span class="code" style="font-size:13px">${esc(e.codigo)}</span><div class="muted">${esc(e.fecha)} · ${esc(e.tecnico)}</div></div>
+      ${chip(e.cumplimiento) || '<span class="chip gr">Correctivo</span>'}</div></div>`).join('') : '<div class="empty">Aún no hay registros en esta quincena.</div>'}
+    <details style="margin-top:8px"><summary style="cursor:pointer;font-weight:600;font-size:14px">Ir a otro equipo o área</summary>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px">${buscadorHTML()}</div></details>
+  </div>
+  ${d.puedeRegistrar ? `<div class="foot"><div class="wrap"><button type="button" class="btn big" onclick="abrirForm('1')">+ Registrar correctivo</button></div></div>` : ''}`;
+  activarBuscador();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Formulario de ejecución ---------- */
+let F = {};
+function abrirForm(codigo) {
+  const d = S.data, todas = [].concat(d.pendientes.vencidas, d.pendientes.actuales, d.pendientes.intervalo);
+  const t = codigo === '1' ? null : todas.find(x => x.codigo === codigo);
+  F = { codigo, tarea: t, foto: null, operativo: 'SI' };
+  const ex = t && t.vencida;
+  app.innerHTML = `<div class="head"><div class="row"><button type="button" class="btn ghost" style="width:auto;min-height:40px" onclick="vistaActivo()">← Volver</button>
+      <span class="code">${esc(d.activo.codigo)}</span></div></div>
+  <div class="wrap pad">
+    ${t ? `<div class="card" ${ex ? 'style="border-color:var(--ex-line)"' : ''}><div class="row"><span class="code" style="font-size:18px">${esc(t.codigo)}</span>
+        ${ex ? '<span class="chip ex">EX</span>' : ''}</div>
+      <span style="font-size:15px;font-weight:500">${esc(t.descripcion)}</span>
+      ${ex ? `<span style="font-size:13px;color:var(--ex)">Programada en ${esc(t.quincena)}. Se registrará como extemporánea (subsanada).</span>` : ''}</div>`
+      : `<div class="card"><span class="code" style="font-size:18px">Correctivo · código 1</span><span class="muted">${esc(d.activo.nombre)}</span></div>`}
+    <div class="facts"><div><span>Tipo</span><b>${t ? 'Preventivo' : 'Correctivo'}</b></div>
+      <div><span>Técnico (verificado)</span><b>${esc(S.tec.nombre)}</b></div>
+      <div><span>Asignada a</span><b>${esc(t ? t.asignado : '—')}</b></div>
+      <div><span>Fecha y hora</span><b>Las asigna el servidor</b></div></div>
+    <div><label class="f" for="desc">${t ? 'Actividades ejecutadas' : 'Falla encontrada y trabajo realizado'} *</label>
+      <textarea id="desc" class="in" rows="4" placeholder="Describe lo que hiciste"></textarea></div>
+    <div><label class="f" for="min">Tiempo empleado (minutos) *</label>
+      <input id="min" class="in" type="number" inputmode="numeric" min="1" max="1439" placeholder="0"></div>
+    <div><span class="f">Foto de evidencia ${!t ? '*' : '(opcional)'}</span>
+      <label class="photo" for="foto" id="fotoBox"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3D4450" stroke-width="2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Tomar foto o elegir de galería</label>
+      <input id="foto" type="file" accept="image/*" capture="environment" class="hidden"></div>
+    <div><span class="f">¿El ${d.activo.tipo === 'AREA' ? 'área' : 'equipo'} queda en condiciones de operar? *</span>
+      <div class="seg"><button type="button" aria-pressed="true" data-op="SI">Sí</button><button type="button" aria-pressed="false" data-op="NO">No</button></div></div>
+    <div><label class="f" for="pend">Actividades pendientes</label><input id="pend" class="in" placeholder="Ninguna"></div>
+    <div><label class="f" for="rep">Repuesto usado (referencia)</label><input id="rep" class="in" placeholder="Opcional"></div>
+    <div><label class="f" for="con">Contratista</label><input id="con" class="in" placeholder="Solo si aplica"></div>
+    <div id="ferr" class="note err hidden" role="alert"></div>
+  </div>
+  <div class="foot"><div class="wrap"><button type="button" class="btn ghost" onclick="vistaActivo()">Cancelar</button>
+    <button type="button" class="btn" id="guardar">Guardar registro</button></div></div>`;
+  app.querySelectorAll('[data-op]').forEach(b => b.onclick = () => {
+    F.operativo = b.dataset.op;
+    app.querySelectorAll('[data-op]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  });
+  document.getElementById('foto').onchange = e => comprimir(e.target.files[0]);
+  document.getElementById('guardar').onclick = guardar;
+  window.scrollTo(0, 0);
+}
+
+function comprimir(file) {
+  if (!file) return;
+  const box = document.getElementById('fotoBox');
+  box.innerHTML = '<span class="muted">Procesando foto…</span>';
+  const img = new Image(), url = URL.createObjectURL(file);
+  img.onload = () => {
+    const max = 1600, r = Math.min(1, max / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    F.foto = c.toDataURL('image/jpeg', 0.8);
+    URL.revokeObjectURL(url);
+    box.innerHTML = `<img src="${F.foto}" alt="Foto de evidencia seleccionada"><span class="muted">Toca para cambiarla</span>`;
+  };
+  img.onerror = () => { box.innerHTML = '<span class="muted">No se pudo leer la imagen. Intenta con otra.</span>'; };
+  img.src = url;
+}
+
+async function guardar() {
+  const v = id => document.getElementById(id).value.trim();
+  const err = document.getElementById('ferr'), btn = document.getElementById('guardar');
+  const fallo = m => { err.textContent = m; err.classList.remove('hidden'); err.scrollIntoView({ block: 'center' }); };
+  const desc = v('desc'), min = parseInt(v('min'), 10);
+  if (desc.length < 5) return fallo('Describe las actividades ejecutadas.');
+  if (!(min > 0 && min < 1440)) return fallo('Indica el tiempo en minutos.');
+  if (!F.tarea && !F.foto) return fallo('La foto de evidencia es obligatoria en correctivos.');
+  err.classList.add('hidden'); btn.disabled = true; btn.textContent = 'Guardando…';
+  try {
+    const r = await api('registrar', { tipo: F.tarea ? 'PREVENTIVO' : 'CORRECTIVO', codigo: F.codigo, descripcion: desc,
+      tiempoMin: min, operativo: F.operativo, pendientes: v('pend'), repuesto: v('rep'), contratista: v('con'), foto: F.foto });
+    toast('Registro guardado: ' + r.codigo + (r.cumplimiento ? ' · ' + r.cumplimiento : ''));
+    S.hv.items = [];
+    await cargarActivo();
+  } catch (e) {
+    if (e.manejado) return;
+    btn.disabled = false; btn.textContent = 'Guardar registro';
+    fallo(e.message);
+  }
+}
+
+/* ---------- Hoja de vida ---------- */
+async function abrirHojaVida(reset) {
+  if (reset !== false) S.hv = { filtro: S.hv.filtro || 'TODO', pagina: 0, items: [], total: 0 };
+  if (!S.hv.items.length) cargando('Cargando hoja de vida…');
+  try {
+    const r = await api('hojaVida', { filtro: S.hv.filtro, pagina: S.hv.pagina });
+    S.hv.items = S.hv.items.concat(r.items); S.hv.total = r.total;
+    vistaHojaVida();
+  } catch (e) { if (!e.manejado) vistaError(e.message); }
+}
+
+function vistaHojaVida() {
+  const fil = [['TODO', 'Todo'], ['PREVENTIVOS', 'Preventivos'], ['CORRECTIVOS', 'Correctivos'], ['NE', 'No ejecutadas']];
+  let mes = '';
+  const lista = S.hv.items.map(x => {
+    const m = (x.fecha || '').slice(0, 7);
+    const sep = m && m !== mes ? `<span class="sec gr">${esc(nombreMes(m))}</span>` : '';
+    mes = m || mes;
+    const anul = x.estado === 'ANULADO';
+    return sep + `<div class="card" ${anul ? 'style="opacity:.55"' : ''}>
+      <div class="row"><span class="code" style="font-size:13px">${esc(x.codigo || (/(correct)/i.test(x.tipo) ? '1 · correctivo' : '—'))}</span>
+        ${anul ? '<span class="chip gr">Anulado</span>' : chip(x.cumplimiento) || (x.origen === 'historico' ? '<span class="chip gr">Histórico</span>' : '')}</div>
+      <span style="font-size:14px;font-weight:500">${esc(x.descripcion)}</span>
+      <span class="muted">${esc(x.fecha)} · ${esc(x.tecnico || '—')} · ${esc(x.tipo || '')}</span>
+      ${x.foto && /^https:\/\//.test(x.foto) ? `<a href="${esc(x.foto)}" target="_blank" rel="noopener" style="font-size:14px">Ver foto</a>` : ''}</div>`;
+  }).join('');
+  app.innerHTML = cabecera('h') + `<div class="wrap pad">
+    <div class="filters" role="group" aria-label="Filtrar registros">${fil.map(([k, t]) =>
+      `<button type="button" aria-pressed="${S.hv.filtro === k}" onclick="S.hv.filtro='${k}';abrirHojaVida()">${t}</button>`).join('')}</div>
+    <span class="muted">${S.hv.total} registros</span>
+    ${lista || '<div class="empty">No hay registros con este filtro.</div>'}
+    ${S.hv.items.length < S.hv.total ? `<button type="button" class="btn outline" onclick="S.hv.pagina++;abrirHojaVida(false)">Cargar más</button>` : ''}
+  </div>`;
+}
+function nombreMes(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  const n = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][m - 1];
+  return n ? n.charAt(0).toUpperCase() + n.slice(1) + ' ' + y : ym;
+}
+
+/* ---------- Arranque ---------- */
+(function () {
+  const t = tokenGuardado();
+  if (t) { S.token = t; iniciar(); } else vistaLogin();
+})();
 </script>
 </body>
 </html>
